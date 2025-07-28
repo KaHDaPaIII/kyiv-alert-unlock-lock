@@ -1,0 +1,30 @@
+name: Unlock Shelter on Kyiv Alert
+
+on:
+  schedule:
+    - cron: '*/1 * * * *'  # every 1 minute
+  workflow_dispatch:       # allow manual triggering for testing
+
+jobs:
+  check-alert-and-unlock:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Kyiv alert status
+        id: check_alert
+        run: |
+          response=$(curl -s https://alerts.com.ua/api/states/25)
+          echo "API Response: $response"
+
+          alert=$(echo "$response" | jq '.state.alert')
+
+          echo "Kyiv alert status: $alert"
+
+          if [ "$alert" = "true" ]; then
+            echo "Alert active. Triggering webhook..."
+            curl -s "$EWELINK_WEBHOOK_URL"
+          else
+            echo "No alert. Nothing to do."
+          fi
+        env:
+          EWELINK_WEBHOOK_URL: ${{ secrets.EWELINK_WEBHOOK_URL }}
