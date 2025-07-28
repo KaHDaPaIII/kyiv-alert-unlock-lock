@@ -2,7 +2,7 @@ name: Unlock Shelter on Kyiv Alert
 
 on:
   schedule:
-    - cron: '*/1 * * * *'  # every 1 minute
+    - cron: '*/5 * * * *'  # every 5 minute
   workflow_dispatch:       # allow manual triggering for testing
 
 jobs:
